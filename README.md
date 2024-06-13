@@ -36,8 +36,8 @@ This is a Book Management application built with React and Supabase, providing f
 
 3. **Create a `.env` file in the root directory with your Supabase credentials:**
    ```env
-   REACT_APP_SUPABASE_URL=your_supabase_url
-   REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key
+   VITE_SUPABASE_URL=your_supabase_url
+   VITE_ANON_KEY=your_supabase_anon_key
    ```
 
 ## Usage
