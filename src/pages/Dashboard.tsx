@@ -168,7 +168,7 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="Dashboard p-4 space-y-8">
+    <div className="p-4 space-y-8">
       <div className="flex items-center mb-6">
         <button
           className="bg-blue-500 text-white py-2 px-4 rounded mr-4"
@@ -180,24 +180,24 @@ const Dashboard: React.FC = () => {
           Book Management Dashboard
         </h1>
       </div>
-      <div className="flex space-x-4">
-        <div className="flex-1 bg-white p-4 rounded-lg shadow-md">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-white p-4 rounded-lg shadow-md">
           <h2 className="text-xl font-semibold mb-4">Genre Distribution</h2>
           <div className="h-64">
             <Pie data={genreDistribution} />
           </div>
         </div>
-        <div className="flex-1 bg-white p-4 rounded-lg shadow-md">
+        <div className="bg-white p-4 rounded-lg shadow-md">
           <h2 className="text-xl font-semibold mb-4">Books by Author</h2>
           <div className="h-64">
             <Bar data={authorCounts} options={options} />
           </div>
         </div>
-      </div>
-      <div className="flex-1 bg-white p-4 rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold mb-4">Books by Status</h2>
-        <div className="h-64">
-          <Doughnut data={statusCounts} />
+        <div className="bg-white p-4 rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold mb-4">Books by Status</h2>
+          <div className="h-64">
+            <Doughnut data={statusCounts} />
+          </div>
         </div>
       </div>
     </div>
