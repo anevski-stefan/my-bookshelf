@@ -1,7 +1,6 @@
-// src/Dashboard.tsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bar, Pie } from "react-chartjs-2";
+import { Bar, Doughnut, Pie } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -30,6 +29,7 @@ interface Book {
   title: string;
   author: string;
   genre: string;
+  status: string;
   created_at: string;
 }
 
@@ -47,10 +47,6 @@ interface ChartData {
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const [books, setBooks] = useState<Book[]>([]);
-  const [booksPerMonth, setBooksPerMonth] = useState<ChartData>({
-    labels: [],
-    datasets: [],
-  });
   const [genreDistribution, setGenreDistribution] = useState<ChartData>({
     labels: [],
     datasets: [],
@@ -58,6 +54,16 @@ const Dashboard: React.FC = () => {
   const [authorCounts, setAuthorCounts] = useState<ChartData>({
     labels: [],
     datasets: [],
+  });
+  const [statusCounts, setStatusCounts] = useState<ChartData>({
+    labels: ["Available", "Checked Out", "Unavailable"],
+    datasets: [
+      {
+        label: "Books by Status",
+        data: [0, 0, 0],
+        backgroundColor: ["#2ecc71", "#f39c12", "#e74c3c"],
+      },
+    ],
   });
 
   const fetchBooks = async (): Promise<Book[]> => {
@@ -68,43 +74,6 @@ const Dashboard: React.FC = () => {
       return [];
     }
     return data as Book[];
-  };
-
-  const transformBooksPerMonthData = (books: Book[]): ChartData => {
-    const months = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
-
-    const booksPerMonth = new Array(12).fill(0);
-
-    books.forEach((book) => {
-      const month = new Date(book.created_at).getMonth();
-      booksPerMonth[month] += 1;
-    });
-
-    return {
-      labels: months,
-      datasets: [
-        {
-          label: "Books Read",
-          data: booksPerMonth,
-          backgroundColor: "rgba(75, 192, 192, 0.6)",
-          borderColor: "rgba(75, 192, 192, 1)",
-          borderWidth: 1,
-        },
-      ],
-    };
   };
 
   const transformGenreDistributionData = (books: Book[]): ChartData => {
@@ -151,14 +120,37 @@ const Dashboard: React.FC = () => {
     };
   };
 
+  const calculateStatusCounts = (books: Book[]): ChartData => {
+    const availableCount = books.filter(
+      (book) => book.status === "Available"
+    ).length;
+    const checkedOutCount = books.filter(
+      (book) => book.status === "Checked Out"
+    ).length;
+    const unavailableCount = books.filter(
+      (book) => book.status === "Unavailable"
+    ).length;
+
+    return {
+      labels: ["Available", "Checked Out", "Unavailable"],
+      datasets: [
+        {
+          label: "Books by Status",
+          data: [availableCount, checkedOutCount, unavailableCount],
+          backgroundColor: ["#2ecc71", "#f39c12", "#e74c3c"],
+        },
+      ],
+    };
+  };
+
   useEffect(() => {
     const getBooksData = async () => {
       const fetchedBooks = await fetchBooks();
       setBooks(fetchedBooks);
 
-      setBooksPerMonth(transformBooksPerMonthData(fetchedBooks));
       setGenreDistribution(transformGenreDistributionData(fetchedBooks));
       setAuthorCounts(transformAuthorCountsData(fetchedBooks));
+      setStatusCounts(calculateStatusCounts(fetchedBooks));
     };
 
     getBooksData();
@@ -168,6 +160,9 @@ const Dashboard: React.FC = () => {
     scales: {
       y: {
         beginAtZero: true,
+        ticks: {
+          stepSize: 1,
+        },
       },
     },
   };
@@ -185,22 +180,24 @@ const Dashboard: React.FC = () => {
           Book Management Dashboard
         </h1>
       </div>
-      <div className="bg-white p-4 rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold mb-4">Books Read per Month</h2>
-        <div className="h-64">
-          <Bar data={booksPerMonth} options={options} />
+      <div className="flex space-x-4">
+        <div className="flex-1 bg-white p-4 rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold mb-4">Genre Distribution</h2>
+          <div className="h-64">
+            <Pie data={genreDistribution} />
+          </div>
+        </div>
+        <div className="flex-1 bg-white p-4 rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold mb-4">Books by Author</h2>
+          <div className="h-64">
+            <Bar data={authorCounts} options={options} />
+          </div>
         </div>
       </div>
-      <div className="bg-white p-4 rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold mb-4">Genre Distribution</h2>
+      <div className="flex-1 bg-white p-4 rounded-lg shadow-md">
+        <h2 className="text-xl font-semibold mb-4">Books by Status</h2>
         <div className="h-64">
-          <Pie data={genreDistribution} />
-        </div>
-      </div>
-      <div className="bg-white p-4 rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold mb-4">Books by Author</h2>
-        <div className="h-64">
-          <Bar data={authorCounts} options={options} />
+          <Doughnut data={statusCounts} />
         </div>
       </div>
     </div>
