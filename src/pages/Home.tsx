@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import supabase from "../config/supabaseClient.ts";
 import BookCard from "../components/BookCard/BookCard.tsx";
 import { Link } from "react-router-dom";
