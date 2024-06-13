@@ -85,14 +85,6 @@ export default function Home() {
                 <ul className="space-y-2">
                   <li>
                     <Link
-                      to="/"
-                      className="block text-blue-500 hover:text-blue-600"
-                    >
-                      Home
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
                       to="/dashboard"
                       className="block text-blue-500 hover:text-blue-600"
                     >
