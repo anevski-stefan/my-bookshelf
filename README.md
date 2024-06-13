@@ -17,7 +17,7 @@ This is a Book Management application built with React and Supabase, providing f
 - Add a new book with details such as title, author, genre, and status.
 - Update book details.
 - Delete a book.
-- Visualize books data using charts (Books Read per Month, Genre Distribution, Books by Author).
+- Visualize books data using charts (Books Read per Month, Genre Distribution, Books by Author, Books by Status).
 
 ## Installation
 
