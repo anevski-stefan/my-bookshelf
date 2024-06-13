@@ -48,11 +48,11 @@ const BookCard = ({ book, onDelete }: BookCardProps) => {
           <h3 className="text-lg font-semibold text-gray-800 mb-2">
             {book.title}
           </h3>
-          <p className="text-sm text-gray-600 mb-1">Author: {book.author}</p>
-          <p className="text-sm text-gray-600 mb-1">Genre: {book.genre}</p>
-          <p className="text-sm text-gray-600 mb-1">Status: {book.status}</p>
+          <p className="text-sm text-gray-600 mb-1">by: {book.author}</p>
+          <p className="text-sm text-gray-600 mb-1">genre: {book.genre}</p>
+          <p className="text-sm text-gray-600 mb-1">status: {book.status}</p>
           <p className="text-sm text-gray-500">
-            Created at: {formatDate(book.created_at)}
+            added at: {formatDate(book.created_at)}
           </p>{" "}
         </div>
         <div className="flex justify-between items-center px-4 py-2 bg-gray-100">
