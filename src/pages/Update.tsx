@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import supabase from "../config/supabaseClient";
+import { toast } from "react-toastify";
 
 const statusOptions = [
   "- Select Status -",
@@ -36,11 +37,13 @@ const UpdateBook = () => {
     if (error) {
       console.error("Error while updating data:", error.message);
       setFormError("Error while updating the book. Please try again.");
+      toast.error("Error while updating the book. Please try again.");
     }
 
     if (data) {
       console.log("Book was updated successfully:", data);
       setFormError(null);
+      toast.success("Book updated successfully!");
       navigate("/");
     }
   };

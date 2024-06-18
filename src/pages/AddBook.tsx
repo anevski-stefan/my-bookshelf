@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import supabase from "../config/supabaseClient";
+import { toast } from "react-toastify";
 
 const statusOptions = [
   "- Select Status -",
@@ -34,11 +35,13 @@ export default function AddBook() {
     if (error) {
       console.error("Error while inserting data:", error.message);
       setFormError("Error while adding the book. Please try again.");
+      toast.error("Error while adding the book. Please try again.");
     }
 
     if (data) {
       console.log("Book was added successfully:", data);
       setFormError(null);
+      toast.success("Book added successfully!");
       navigate("/");
     }
   };

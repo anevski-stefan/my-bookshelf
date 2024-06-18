@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import supabase from "../config/supabaseClient.ts";
 import BookCard from "../components/BookCard/BookCard.tsx";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 interface Book {
   id: string;
@@ -17,6 +18,10 @@ export default function Home() {
   const [books, setBooks] = useState<Book[] | null>(null);
 
   const handleDelete = async (id: string) => {
+    if (books && books.find((book) => book.id === id) === undefined) {
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from("books")
@@ -26,20 +31,24 @@ export default function Home() {
 
       if (error instanceof Error) {
         console.error("Error while deleting the book:", error.message);
+        toast.error("Error while deleting the book. Please try again.");
         return;
       }
 
       setBooks((prevBooks) => {
         if (prevBooks) {
-          return prevBooks.filter((book) => book.id !== id);
+          const updatedBooks = prevBooks.filter((book) => book.id !== id);
+          return updatedBooks;
         }
         return prevBooks;
       });
+      toast.success("Book deleted successfully!");
     } catch (error) {
       console.error(
         "Deleting failed:",
         error instanceof Error ? error.message : "Error"
       );
+      toast.error("Failed to delete the book.");
     }
   };
 
