@@ -41,12 +41,16 @@ interface ChartData {
     backgroundColor: string | string[];
     borderColor?: string;
     borderWidth?: number;
+    percentage?: boolean;
   }[];
 }
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const [books, setBooks] = useState<Book[]>([]);
+  const [filteredBooks, setFilteredBooks] = useState<Book[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   const [genreDistribution, setGenreDistribution] = useState<ChartData>({
     labels: [],
     datasets: [],
@@ -65,6 +69,7 @@ const Dashboard: React.FC = () => {
       },
     ],
   });
+  const [totalBooks, setTotalBooks] = useState<number>(0);
 
   const fetchBooks = async (): Promise<Book[]> => {
     const { data, error } = await supabase.from("books").select("*");
@@ -115,6 +120,7 @@ const Dashboard: React.FC = () => {
           backgroundColor: "rgba(153, 102, 255, 0.6)",
           borderColor: "rgba(153, 102, 255, 1)",
           borderWidth: 1,
+          percentage: false,
         },
       ],
     };
@@ -131,6 +137,9 @@ const Dashboard: React.FC = () => {
       (book) => book.status === "Unavailable"
     ).length;
 
+    const total = availableCount + checkedOutCount + unavailableCount;
+    setTotalBooks(total);
+
     return {
       labels: ["Available", "Checked Out", "Unavailable"],
       datasets: [
@@ -145,16 +154,46 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     const getBooksData = async () => {
-      const fetchedBooks = await fetchBooks();
-      setBooks(fetchedBooks);
+      try {
+        setLoading(true);
+        const fetchedBooks = await fetchBooks();
+        setBooks(fetchedBooks);
+        setFilteredBooks(fetchedBooks);
 
-      setGenreDistribution(transformGenreDistributionData(fetchedBooks));
-      setAuthorCounts(transformAuthorCountsData(fetchedBooks));
-      setStatusCounts(calculateStatusCounts(fetchedBooks));
+        setGenreDistribution(transformGenreDistributionData(fetchedBooks));
+        setAuthorCounts(transformAuthorCountsData(fetchedBooks));
+        setStatusCounts(calculateStatusCounts(fetchedBooks));
+      } catch (err) {
+        setError("Failed to fetch books data");
+      } finally {
+        setLoading(false);
+      }
     };
 
     getBooksData();
   }, []);
+
+  const refreshData = async () => {
+    setLoading(true);
+    const fetchedBooks = await fetchBooks();
+    setBooks(fetchedBooks);
+    setFilteredBooks(fetchedBooks);
+    setGenreDistribution(transformGenreDistributionData(fetchedBooks));
+    setAuthorCounts(transformAuthorCountsData(fetchedBooks));
+    setStatusCounts(calculateStatusCounts(fetchedBooks));
+    setLoading(false);
+  };
+
+  const handleSearch = (query: string) => {
+    if (!query.trim()) {
+      setFilteredBooks(books);
+    } else {
+      const filtered = books.filter((book) =>
+        book.title.toLowerCase().includes(query.toLowerCase())
+      );
+      setFilteredBooks(filtered);
+    }
+  };
 
   const options = {
     scales: {
@@ -165,10 +204,29 @@ const Dashboard: React.FC = () => {
         },
       },
     },
+    plugins: {
+      tooltip: {
+        callbacks: {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          label: function (context: any) {
+            let label = context.label || "";
+            const value = context.raw;
+
+            if (context.dataset.percentage !== false) {
+              const percentage = ((value / books.length) * 100).toFixed(0);
+              label += `: ${percentage}% (${value})`;
+            } else {
+              label += `: ${value}`;
+            }
+            return label;
+          },
+        },
+      },
+    },
   };
 
   return (
-    <div className="Dashboard p-4 space-y-8">
+    <div className="p-4 space-y-8">
       <div className="flex items-center mb-6">
         <button
           className="bg-blue-500 text-white py-2 px-4 rounded mr-4"
@@ -179,26 +237,70 @@ const Dashboard: React.FC = () => {
         <h1 className="text-3xl font-bold mx-auto">
           Book Management Dashboard
         </h1>
+
+        <button
+          className="bg-green-500 text-white py-2 px-4 rounded"
+          onClick={refreshData}
+        >
+          Refresh
+        </button>
       </div>
-      <div className="flex space-x-4">
-        <div className="flex-1 bg-white p-4 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-4">Genre Distribution</h2>
-          <div className="h-64">
-            <Pie data={genreDistribution} />
+      <p className="text-lg font-semibold w-full flex justify-center">
+        Total Books: {totalBooks}
+      </p>
+
+      {loading ? (
+        <div className="flex justify-center items-center h-64">
+          <div className="loader"></div>
+        </div>
+      ) : error ? (
+        <div className="text-red-500 text-center">{error}</div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-white p-4 rounded-lg shadow-md">
+            <h2 className="text-xl font-semibold mb-4">Genre Distribution</h2>
+            <div className="h-64">
+              <Pie data={genreDistribution} options={options} />
+            </div>
+          </div>
+          <div className="bg-white p-4 rounded-lg shadow-md">
+            <h2 className="text-xl font-semibold mb-4">Books by Author</h2>
+            <div className="h-64">
+              <Bar data={authorCounts} options={options} />
+            </div>
+          </div>
+          <div className="bg-white p-4 rounded-lg shadow-md">
+            <h2 className="text-xl font-semibold mb-4">Books by Status</h2>
+            <div className="h-64">
+              <Doughnut data={statusCounts} options={options} />
+            </div>
           </div>
         </div>
-        <div className="flex-1 bg-white p-4 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-4">Books by Author</h2>
-          <div className="h-64">
-            <Bar data={authorCounts} options={options} />
-          </div>
+      )}
+      <div className="mt-8 border border-gray-300 rounded p-5">
+        <div className="flex items-center mb-4">
+          <input
+            type="text"
+            placeholder="Search by Title"
+            className="p-2 border border-gray-300 rounded mr-4"
+            onChange={(e) => handleSearch(e.target.value)}
+          />
         </div>
-      </div>
-      <div className="flex-1 bg-white p-4 rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold mb-4">Books by Status</h2>
-        <div className="h-64">
-          <Doughnut data={statusCounts} />
-        </div>
+        <h2 className="text-xl font-semibold mb-4">Filtered Books</h2>
+        {filteredBooks.length === 0 ? (
+          <p className="text-lg">No books found.</p>
+        ) : (
+          <ul className="divide-y divide-gray-200">
+            {filteredBooks.map((book) => (
+              <li key={book.id} className="py-4">
+                <p className="text-lg">
+                  - <span className="font-semibold">{book.title}</span> by{" "}
+                  {book.author}
+                </p>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );
