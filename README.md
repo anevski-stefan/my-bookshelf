@@ -1,10 +1,11 @@
 # Book Management App
 
-This is a Book Management application built with React and Supabase, providing functionalities to add, update, delete, and visualize books data. This application also includes a dashboard to display visual data analytics.
+This is a Book Management application built with React, TypeScript, Vite, and Supabase, providing functionalities to add, update, delete, and visualize books data. This application also includes a dashboard to display visual data analytics.
 
 ## Table of Contents
 
 - [Features](#features)
+- [Technologies](#technologies)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Folder Structure](#folder-structure)
@@ -14,10 +15,25 @@ This is a Book Management application built with React and Supabase, providing f
 
 ## Features
 
-- Add a new book with details such as title, author, genre, and status.
-- Update book details.
-- Delete a book.
-- Visualize books data using charts (Books Read per Month, Genre Distribution, Books by Author, Books by Status).
+- Add a new book with details such as title, author, genre, and status
+- Update book details
+- Delete a book
+- Visualize books data using Chart.js (Books Read per Month, Genre Distribution, Books by Author, Books by Status)
+- Responsive design with TailwindCSS
+- Toast notifications for user feedback
+- TypeScript support for better development experience
+
+## Technologies
+
+- React 18
+- TypeScript
+- Vite
+- Supabase
+- TailwindCSS
+- React Router DOM
+- Chart.js & React-Chartjs-2
+- React Toastify
+- GitHub Pages for deployment
 
 ## Installation
 
@@ -45,12 +61,22 @@ This is a Book Management application built with React and Supabase, providing f
 1. **Start the development server:**
 
    ```bash
-   npm start
+   npm run dev
    ```
 
 2. **Open your browser and navigate to:**
    ```
    http://localhost:5173/
+   ```
+
+3. **Build for production:**
+   ```bash
+   npm run build
+   ```
+
+4. **Deploy to GitHub Pages:**
+   ```bash
+   npm run deploy
    ```
 
 ## Folder Structure
@@ -59,18 +85,18 @@ This is a Book Management application built with React and Supabase, providing f
 src/
 │
 ├── components/
-│   ├── BookCard.tsx
+│   ├── App/
+│   ├── BookCard/
 │
 ├── pages/
 │   ├── AddBook.tsx
 │   ├── Dashboard.tsx
 │   ├── Home.tsx
-│   ├── UpdateBook.tsx
+│   ├── Update.tsx
 │
 ├── config/
 │   └── supabaseClient.ts
 │
-├── App.tsx
 ├── main.tsx
 └── index.css
 ```
@@ -88,16 +114,23 @@ The application uses Supabase for backend operations. Make sure to configure you
 
 ## Components
 
-- **App.tsx:** The main application component that sets up the routes.
-- **BookCard.tsx:** A component to display book details and provide options to edit or delete the book.
-- **AddBook.tsx:** A page to add a new book.
-- **UpdateBook.tsx:** A page to update an existing book.
-- **Dashboard.tsx:** A page that displays various charts and graphs about the books data.
-- **supabaseClient.ts:** Configuration file for Supabase client.
+### Pages
+- **Home.tsx:** The main page that lists all books
+- **AddBook.tsx:** A page to add a new book
+- **Update.tsx:** A page to update an existing book
+- **Dashboard.tsx:** A page that displays various charts and graphs about the books data
+
+### Components
+- **BookCard:** A component to display book details and provide options to edit or delete the book
+- **App:** The main application component that sets up the routes and layout
 
 ### Routes
 
-- `/`: Home page that lists all books.
-- `/add`: Page to add a new book.
-- `/:id`: Page to update a book (where `id` is the book's ID).
-- `/dashboard`: Dashboard page to display charts and graphs.
+- `/`: Home page that lists all books
+- `/add`: Page to add a new book
+- `/update/:id`: Page to update a book (where `id` is the book's ID)
+- `/dashboard`: Dashboard page to display charts and graphs
+
+## License
+
+This project is open source and available under the MIT License.
