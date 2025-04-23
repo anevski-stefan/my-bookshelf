@@ -79,28 +79,6 @@ This is a Book Management application built with React, TypeScript, Vite, and Su
    npm run deploy
    ```
 
-## Folder Structure
-
-```plaintext
-src/
-│
-├── components/
-│   ├── App/
-│   ├── BookCard/
-│
-├── pages/
-│   ├── AddBook.tsx
-│   ├── Dashboard.tsx
-│   ├── Home.tsx
-│   ├── Update.tsx
-│
-├── config/
-│   └── supabaseClient.ts
-│
-├── main.tsx
-└── index.css
-```
-
 ## API Configuration
 
 The application uses Supabase for backend operations. Make sure to configure your Supabase instance with a table named `books` and the following columns:
@@ -133,4 +111,4 @@ The application uses Supabase for backend operations. Make sure to configure you
 
 ## License
 
-This project is open source and available under the MIT License.
+This project is licensed under the [MIT License](LICENSE) - see the [LICENSE](LICENSE) file for details.
